@@ -1,8 +1,14 @@
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from helpers import build_filter_option_from_form
-from providers import Provider_list
-from constants import PROVIDER_JSON, FILTER_OPTIONS, STR_TRAITS, TRAITS, SEXES, DEFAULT_COLUMNS, DEFAULT_ORDER
+from providers import ProviderList
+from constants import ( PROVIDER_JSON,
+                        FILTER_OPTIONS,
+                        STR_TRAITS,
+                        TRAITS,
+                        SEXES,
+                        DEFAULT_COLUMNS,
+                        DEFAULT_ORDER )
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "never-tell!"
@@ -10,7 +16,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-providers = Provider_list(PROVIDER_JSON)
+providers = ProviderList(PROVIDER_JSON)
 
 @app.route("/")
 def root():

@@ -5,7 +5,7 @@ from helpers import intersection, unique_union
 from providers_types import Filter_Options, Provider
 from constants import STR_TRAITS
 
-class Provider_list:
+class ProviderList:
     def __init__(self, providers_json):
         """
         Create list and dataframe attribute from provided json file.
@@ -13,8 +13,8 @@ class Provider_list:
         for filtering providers by skill.
         """
 
-        (self.providers, self.df) = Provider_list.get_providers(providers_json)
-        (self.primary_skills, self.secondary_skills) = Provider_list.get_skills_dict(self.df)
+        (self.providers, self.df) = ProviderList.get_providers(providers_json)
+        (self.primary_skills, self.secondary_skills) = ProviderList.get_skills_dict(self.df)
         # counter for each row that will be incremented for each time came back from a filter
         self.returned = self.df["returned"]
 
