@@ -15,6 +15,8 @@ class Provider_list:
 
         (self.providers, self.df) = Provider_list.get_providers(providers_json)
         (self.primary_skills, self.secondary_skills) = Provider_list.get_skills_dict(self.df)
+        # counter for each row that will be incremented for each time came back from a filter
+        self.returned = self.df["returned"]
 
     def __repr__(self):
         """
@@ -37,6 +39,7 @@ class Provider_list:
             # Convert column to datetime64
             providers_df["birth_date"] = pd.to_datetime(providers_df["birth_date"],
                                                         format="%Y-%m-%d")
+            providers_df["returned"] = 0
 
         return (providers_list, providers_df)
 
@@ -72,20 +75,36 @@ class Provider_list:
 
         return (primary_skills, secondary_skills)
 
-    def list(self) -> List[Provider]:
+    def _increment_returned_counter(self):
         """
-        Return a list representation of the current filtered dataframe
+        Internal method to increment both the returned attribute
+        and the returned column in the current dataframe
         """
+
+        filtered_index = self.df.index
+        self.df["returned"] = self.df["returned"] + 1
+        self.returned.iloc[filtered_index] = self.returned.iloc[filtered_index] + 1
+        return self
+
+    def list(self, with_returned=False) -> List[Provider]:
+        """
+        Return a list representation of the current filtered dataframe.
+        Can choose to return the "returned" column in the dataframe.
+        """
+
+        if with_returned:
+            df_copy = self.df.copy()
+        else:
+            df_copy = self.df[self.df.columns.difference(["returned"])].copy()
 
         # Convert datetime column into a string column
-        converted_df = self.df.copy()
-        converted_df["birth_date"] = converted_df["birth_date"].astype(str)
-        df_list = []
+        df_copy["birth_date"] = df_copy["birth_date"].astype(str)
+        filtered_provider_list = []
 
-        for index, row in converted_df.iterrows():
-            df_list.append(row.to_dict())
+        for index, row in df_copy.iterrows():
+            filtered_provider_list.append(row.to_dict())
 
-        return df_list
+        return filtered_provider_list
 
     def sort_rating(self, ascending = False):
         """
@@ -95,12 +114,27 @@ class Provider_list:
         self.df = self.df.sort_values(by=['rating'], ascending=ascending)
         return self
 
-    def reset_df(self):
+    def sort(self, columns: List[str], ascending: List[bool]):
         """
-        Resets the filtered dataframe to the data shape from the source list
+        Sort the current dataframe by multiple columns, which columns to sort
+        are determined by a list of <columns>. Whether those columns are ascending
+        or descending is determined by the <ascending> list of booleans for the respective column
+        """
+        
+        self.df = self.df.sort_values(by=columns, ascending=ascending)
+        return self
+
+    def reset(self, counter_reset=False):
+        """
+        Resets the filtered dataframe to the data shape from the source list.
+        If <counter_reset> is true, also resets the returned counter to 0
         """
 
+        if counter_reset:
+            self.returned = 0
+        
         self.df = pd.DataFrame(self.providers)
+        self.df["returned"] = self.returned
         return self
 
     def filter_by_str(self, trait:str, value: str):
@@ -111,6 +145,7 @@ class Provider_list:
         """
 
         self.df = self.df[self.df[trait].str.contains(value, case=False)]
+        self._increment_returned_counter()
         return self
 
     def filter_by_sex(self, sex: str):
@@ -120,6 +155,7 @@ class Provider_list:
         """
 
         self.df = self.df[self.df["sex"] == sex]
+        self._increment_returned_counter()
         return self
 
     def filter_by_date(self, operator: str, date: str):
@@ -136,10 +172,13 @@ class Provider_list:
 
         if operator == "at":
             self.df = self.df.loc[self.df["birth_date"] == date]
+            self._increment_returned_counter()
         elif operator == "after":
             self.df = self.df.loc[self.df["birth_date"] > date]
+            self._increment_returned_counter()
         elif operator == "before":
             self.df = self.df.loc[self.df["birth_date"] < date]
+            self._increment_returned_counter()
         else:
             print("That operation is not used. use at, after, or before instead")
 
@@ -158,10 +197,13 @@ class Provider_list:
 
         if operator == "eq":
             self.df = self.df[self.df[trait] == value]
+            self._increment_returned_counter()
         elif operator == "gt":
             self.df = self.df[self.df[trait] > value]
+            self._increment_returned_counter()
         elif operator == "lt":
             self.df = self.df[self.df[trait] < value]
+            self._increment_returned_counter()
         else:
             print("That operation is not used. use eq, gt, or lt instead")
         return self
@@ -174,6 +216,7 @@ class Provider_list:
         """
 
         self.df = self.df.loc[self.df['active'] == active]
+        self._increment_returned_counter()
         return self
 
     def filter_by_skills(self, skills: List[str], primary=True):
@@ -215,6 +258,7 @@ class Provider_list:
 
         # gets rows of providers based on list of indexes by which indexes have skills
         self.df = self.df.iloc[providers_index]
+        self._increment_returned_counter()
         return self
 
     def filter(self, traits: Filter_Options):

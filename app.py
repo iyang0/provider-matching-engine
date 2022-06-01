@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from helpers import build_filter_option_from_form
 from providers import Provider_list
-from constants import PROVIDER_JSON, FILTER_OPTIONS, STR_TRAITS, TRAITS, SEXES
+from constants import PROVIDER_JSON, FILTER_OPTIONS, STR_TRAITS, TRAITS, SEXES, DEFAULT_COLUMNS, DEFAULT_ORDER
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "never-tell!"
@@ -16,8 +16,8 @@ providers = Provider_list(PROVIDER_JSON)
 def root():
     """base case, show all the data."""
 
-    providers.reset_df()
-    providers_list = providers.sort_rating().list()
+    providers.reset()
+    providers_list = providers.sort(DEFAULT_COLUMNS, DEFAULT_ORDER).list()
 
     return render_template("provider_list.html",
                             title = "List of Providers",
@@ -50,11 +50,11 @@ def filtered():
     providers_list = []
 
     if filter_options is not None:
-        providers_list = providers.filter(filter_options).sort_rating().list()
-        providers.reset_df()
+        providers_list = providers.filter(filter_options).sort(DEFAULT_COLUMNS, DEFAULT_ORDER).list()
+        providers.reset()
         session[FILTER_OPTIONS] = None
     else:
-        providers_list = providers.sort_rating().list()
+        providers_list = providers.sort(DEFAULT_COLUMNS, DEFAULT_ORDER).list()
 
     return render_template("provider_list.html",
                             title = "List of Filtered Providers",

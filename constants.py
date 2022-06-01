@@ -1,5 +1,7 @@
 PROVIDER_JSON = "providers.json"
 FILTER_OPTIONS = "filter_options"
+DEFAULT_COLUMNS = ["returned", "rating"]
+DEFAULT_ORDER = [True, False]
 TRAITS = [ "id", 
             "first_name",
             "last_name",
