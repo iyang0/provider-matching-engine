@@ -106,7 +106,7 @@ class Provider_list:
     def filter_by_str(self, trait:str, value: str):
         """
         Filters out rows of data from current dataframe
-        whether the row contains a substring of <value>
+        by whether the row contains a substring of <value>
         in the column/trait of <trait>.
         """
 
@@ -125,7 +125,7 @@ class Provider_list:
     def filter_by_date(self, operator: str, date: str):
         """ 
         Filters out rows of data from current dataframe
-        whether the row has a birthday that is
+        by whether the row has a birthday that is
         before, after, or at the provided <date>.
 
         <date> should be in "YYYY-MM-DD" format
@@ -146,7 +146,8 @@ class Provider_list:
         return self
 
     def filter_by_num(self, trait: str, operator: str, value: Union[int,float]):
-        """ Filters out rows of data from current dataframe
+        """
+        Filters out rows of data from current dataframe
         whether the row contains a number with
         greater than, less than, or equal value than the number <value>
         in the column/trait of <trait> parameter.
@@ -166,14 +167,18 @@ class Provider_list:
         return self
 
     def filter_active(self, active = True):
-        """ Filters out rows of data from current dataframe
-        whether that provider is either active or inactive, by default selects active"""
+        """
+        Filters out rows of data from current dataframe
+        by whether that provider is either active or inactive,
+        by default selects active
+        """
 
         self.df = self.df.loc[self.df['active'] == active]
         return self
 
     def filter_by_skills(self, skills: List[str], primary=True):
-        """ Filters out rows of data from current dataframe
+        """ 
+        Filters out rows of data from current dataframe by
         whether that provider has the skills in the <skills> list. 
         By default checks skills in primary_skills,
         will check secondary_skills if <primary> is false
