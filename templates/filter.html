@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+  <h1>Search for providers by their traits</h1>
+  <h3>
+    <a href="/">Back to full provider list</a>
+  </h3>
+
+  <form action="/filter" method="POST" class="searchForm">
+
+      {% for trait in traits %}
+        {% if trait == "id" or trait == "rating" %}
+          <div class="traitInput">
+
+            <label for="{{trait}}Option" class="labelText">{{trait}} filter options:</label>
+            <select name="{{trait}}_option" id="{{trait}}Option" class="dropdown">
+              <option value="gt">greater than</option>
+              <option value="lt">less than</option>
+              <option value="eq">equals</option>
+            </select>
+            <input type="text" id="{{trait}}Val" name="{{trait}}_val" class="textInput"/>
+
+          </div>
+        {% elif trait in str_traits %}
+          <div class="traitInput">
+
+            <label for="{{trait}}" class="labelText">{{trait}}:</label>
+            <input type="text" id="{{trait}}" name="{{trait}}" class="textInput"/>
+          
+          </div>
+        {% elif trait == "sex" %}
+          <div class="traitInput">
+
+            <label for="sex" class="labelText">provider's sex: </label>
+            <select name="sex" id="sex" class="dropdown">
+              <option value="">choice</option>
+              {% for sex in sexes %}
+                <option value="{{sex}}">{{sex}}</option>
+              {% endfor %}
+            </select>
+          
+          </div>
+        {% elif trait == "birth_date" %}
+          <div class="traitInput">
+
+            <label for="dateOption" class="labelText">birthday filter options:</label>
+            <select name="date_option" id="dateOption" class="dropdown">
+              <option value="before">before</option>
+              <option value="at">equals</option>
+              <option value="after">after</option>
+            </select>
+            <input  type="text" 
+                    id="dateVal" 
+                    name="date_val" 
+                    placeholder="YYYY-MM-DD"
+                    class="textInput"/>
+
+          </div>
+        {% elif trait == "primary_skills" or trait == "secondary_skills" %}
+          <div class="traitInput">
+
+            <label for="{{trait}}" class="labelText">{{trait}}:</label>
+            <input  type="text" 
+                    id="trait" 
+                    name="{{trait}}" 
+                    placeholder="separate skills with commas"
+                    class="textInput"/>
+
+          </div>
+
+        {% elif trait == "active" %}
+          <div class="traitInput">
+
+            <p>Display active or inactive providers:</p>
+            <input type="radio" id="allProviders" name="{{trait}}" value="" checked>
+            <label for="allProviders">All providers</label>
+            <input type="radio" id="activeProviders" name="{{trait}}" value="True">
+            <label for="activeProviders">Active providers</label>
+            <input type="radio" id="inactiveProviders" name="{{trait}}" value="False">
+            <label for="inactiveProviders">Inactive providers</label>
+
+          </div>
+        {% endif %}
+      {% endfor %}
+    <button>filter</button>
+  </form>
+
+{% endblock %}

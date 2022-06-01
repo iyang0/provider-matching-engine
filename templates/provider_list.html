@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h1> 
+    <a href="/">
+      {{ title }} 
+    </a>
+  </h1>
+
+  <form action="/filter" method="GET" class="filterRedirect">
+    <button class="redirectBtn">filter</button>
+  </form>
+
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Sex</th>
+        <th>Birth Date</th>
+        <th>Rating</th>
+        <th>Primary Skills</th>
+        <th>Secondary Skills</th>
+        <th>company</th>
+        <th>active</th>
+        <th>country</th>
+        <th>language</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for provider in providers %}
+        <tr>
+          {% for key in provider %}
+            <td>{{provider[key]}}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: aquamarine;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+p {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+button {
+  background-color: #f1f1f1;
+  color: black;
+  font-size: 1rem;
+  padding: .75rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+}
+
+button:hover {
+  background-color: black;
+  color: white;
+}
+
+.searchForm {
+  margin-left: 2rem;
+}
+
+.filterRedirect{
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.redirectBtn {
+  width: 40%;
+}
+
+.traitInput {
+  position: relative;
+  margin: .5rem;
+}
+
+.textInput {
+  position: absolute;
+  left: 20%;
+}
+
+.dropdown {
+  position: absolute;
+  left: 10%;
+}
+
+@media screen and (max-width: 1200px) {
+  .textInput {
+    position: absolute;
+    left: 30%;
+  }
+
+  .dropdown {
+    position: absolute;
+    left: 18%;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .textInput {
+    position: absolute;
+    left: 55%;
+  }
+
+  .dropdown {
+    position: absolute;
+    left: 30%;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .textInput {
+    position: relative;
+    left: 0;
+  }
+
+  .dropdown {
+    position: relative;
+    left: 0;
+  }
+}
