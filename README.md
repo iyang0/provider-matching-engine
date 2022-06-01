@@ -50,20 +50,20 @@ The `Provider_list` class is the backbone of the project which uses the pandas l
 
 - `filter_by_sex(sex: str)` - Filters out rows of data from current dataframe if the provider is the same sex as what is input
 
-- `filter_by_date(operator: str, date: str):` - Filters out rows of data from current dataframe by whether the row has a birthday that is before, after, or at the provided (date).
+- `filter_by_date(operator: str, date: str)` - Filters out rows of data from current dataframe by whether the row has a birthday that is before, after, or at the provided (date).
 
-(date) should be in "YYYY-MM-DD" format
+  (date) should be in "YYYY-MM-DD" format
         
-Which operation is determined by the (operator) input which can be the following: 'at' for equal, 'after' for greater than, or 'before' for less than.
+  Which operation is determined by the (operator) input which can be the following: 'at' for equal, 'after' for greater than, or 'before' for less than.
 
 - `filter_by_num(trait: str, operator: str, value: Union[int,float])` - Filters out rows of data from current dataframe by whether the row contains a number with greater than, less than, or equal value than the number (value) in the column/trait of (trait) parameter.
 
-which operation is determined by the (operator) which can be the following:'eq' for equal, 'gt' for greater than, or 'lt' for less than.
+  which operation is determined by the (operator) which can be the following:'eq' for equal, 'gt' for greater than, or 'lt' for less than.
 
 - `filter_active(active = True)` - Filters out rows of data from current dataframe by whether that provider is either active or inactive, by default selects active.
 
 - `filter_by_skills(skills: List[str], primary=True)` - Filters out rows of data from current dataframe bywhether that provider has the skills in the (skills) list. 
-By default checks skills in primary_skills, will check secondary_skills if (primary) is false
+  By default checks skills in primary_skills, will check secondary_skills if (primary) is false
 
 -`filter(traits: Filter_Options)` - A combination filter, takes in a dictionary (traits) with what traits to filter by as key and other needed options and values to filter through as the value to filter through.
 
@@ -75,7 +75,7 @@ providers = Providers_list("providers.json")
 options = {
     "rating" : ("gt", 5),
     "sex": "Male",
-    "birth_date": ("before", "1990-01-01")
+    "birth_date": ("before", "1990-01-01"),
     "primary_skills": ["Estimates"]
 }
 providers.filter(options).sort_rating().list()
