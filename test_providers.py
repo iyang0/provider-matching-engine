@@ -140,8 +140,6 @@ class SortColTest(TestCase):
 
         assert test_id_list == list(self.providers.df["id"])
 
-
-
 class ResetTest(TestCase):
 
     def setUp(self):
