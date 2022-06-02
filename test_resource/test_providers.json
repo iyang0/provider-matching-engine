@@ -2,7 +2,7 @@
   {
     "id": 1,
     "first_name": "test_first_name",
-    "last_name": "test_first_name",
+    "last_name": "test_last_name",
     "sex": "Male",
     "birth_date": "1934-12-07",
     "rating": 3.6,
@@ -24,7 +24,7 @@
   {
     "id": 2,
     "first_name": "Alethea",
-    "last_name": "Labusch",
+    "last_name": "Solleme",
     "sex": "Female",
     "birth_date": "1951-03-16",
     "rating": 7.9,
@@ -54,7 +54,8 @@
       "Embedded Systems"
     ],
     "secondary_skill": [
-      "Continuous Integration"
+      "Continuous Integration",
+      "test secondary skill"
     ],
     "company": "Treutel and Sons",
     "active": false,

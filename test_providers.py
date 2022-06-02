@@ -12,6 +12,7 @@ class GetProvidersStaticTest(TestCase):
     def test_columns_in_dataframe(self):
         columns = {*TRAITS, "returned"}
         df_columns = {*self.df.columns}
+        
         assert df_columns == columns
 
     def test_initialize_with_empty_returned_column(self):
@@ -49,6 +50,7 @@ class InitTest(TestCase):
     
     def test_init(self):
         providers = ProviderList(TEST_JSON)
+
         assert type(providers.providers) == list
         assert len(providers.providers) == 3
         assert providers.providers[0]["first_name"] == "test_first_name"
@@ -67,10 +69,12 @@ class InternalIncrementerTest(TestCase):
 
     def test_increment_returned(self):
         self.increment()
+
         assert all(self.providers.returned == self.called)
 
     def test_dataframe_returned(self):
         self.increment()
+        
         assert all(self.providers.df["returned"] == self.called)
 
     def test_subset_increment_works(self):
@@ -108,12 +112,14 @@ class sortRatingTest(TestCase):
         self.providers.sort_rating(ascending=False)
         head = self.providers.df["rating"].head(1).values[0]
         tail = self.providers.df["rating"].tail(1).values[0]
+
         assert head > tail
     
     def test_ascending_sort(self):
         self.providers.sort_rating(ascending=True)
         head = self.providers.df["rating"].head(1).values[0]
         tail = self.providers.df["rating"].tail(1).values[0]
+
         assert head < tail
     
 class SortColTest(TestCase):
@@ -128,13 +134,13 @@ class SortColTest(TestCase):
         assert test_id_list == list(self.providers.df["id"])
     #todo: test with other columns
 
-class Reset_test(TestCase):
+class ResetTest(TestCase):
 
     def setUp(self):
         self.providers = ProviderList(TEST_JSON)
     
     def tearDown(self):
-        self.providers.returned = 0
+        self.providers.returned[:] = 0
 
     def test_resets_df(self):
         self.providers.df = self.providers.df.loc[self.providers.df['active']]
@@ -161,3 +167,165 @@ class Reset_test(TestCase):
         assert all(self.providers.returned == 0)
         assert all(self.providers.df["returned"] == 0)
 
+class FilterStrTest(TestCase):
+    
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_str_column_filter(self):
+        self.providers.filter_by_str("first_name","test_first_name")
+
+        assert len(self.providers.df) == 1
+        assert self.providers.df["first_name"].values[0] == "test_first_name"
+
+    def test_str_filter_gets_substrings(self):
+        self.providers.filter_by_str("first_name","test")
+
+        assert len(self.providers.df) == 1
+        assert "test_first_name" in self.providers.df["first_name"].values
+
+    def test_str_filter_gets_right_column(self):
+        self.providers.filter_by_str("last_name","Solleme")
+
+        assert len(self.providers.df) == 2
+        assert "test_first_name" not in self.providers.df["first_name"].values
+
+    def test_str_filter_increment_return(self):
+        self.providers.filter_by_str("first_name","test_first_name")
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterSexTest(TestCase):
+    
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_sex_filter(self):
+        self.providers.filter_by_sex("Female")
+
+        assert len(self.providers.df) == 2
+
+    def test_sex_filter_equality(self):
+        self.providers.filter_by_sex("Male")
+
+        assert "Female" not in self.providers.df["sex"]
+
+    def test_sex_filter_increment_return(self):
+        self.providers.filter_by_sex("Male")
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterDateTest(TestCase):
+    
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_date_filter_equal(self):
+        self.providers.filter_by_date("at", "1951-03-16")
+
+        assert len(self.providers.df) == 1
+        assert "Alethea" in self.providers.df["first_name"].values
+    
+    def test_date_filter_before(self):
+        self.providers.filter_by_date("before", "1951-03-16")
+
+        assert len(self.providers.df) == 1
+        assert "test_first_name" in self.providers.df["first_name"].values
+    
+    def test_date_filter_after(self):
+        self.providers.filter_by_date("after", "1951-03-16")
+
+        assert len(self.providers.df) == 1
+        assert "Hettie" in self.providers.df["first_name"].values
+
+    def test_date_filter_just_year(self):
+        self.providers.filter_by_date("before", "1960")
+
+        assert len(self.providers.df) == 2
+
+    def test_date_filter_number_input_raises_err(self):
+        self.assertRaises(TypeError, self.providers.filter_by_date, "before", 1960)
+
+    def test_date_filter_increment_return(self):
+        self.providers.filter_by_date("at", "1934-12-07")
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterNumTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_num_filter_equal(self):
+        self.providers.filter_by_num("rating","eq", 7.9)
+
+        assert len(self.providers.df) == 1
+        assert "Alethea" in self.providers.df["first_name"].values
+    
+    def test_num_filter_greater(self):
+        self.providers.filter_by_num("rating", "gt", 8)
+
+        assert len(self.providers.df) == 1
+        assert "Hettie" in self.providers.df["first_name"].values
+    
+    def test_num_filter_less(self):
+        self.providers.filter_by_num("rating","lt", 7)
+
+        assert len(self.providers.df) == 1
+        assert "test_first_name" in self.providers.df["first_name"].values
+
+    def test_num_filter_increment_return(self):
+        self.providers.filter_by_num("id", "eq", 1)
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterActiveTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_active_filter(self):
+        self.providers.filter_active()
+
+        assert len(self.providers.df) == 1
+        assert "test_first_name" in self.providers.df["first_name"].values
+
+    def test_inactive_filter(self):
+        self.providers.filter_active(False)
+
+        assert len(self.providers.df) == 2
+
+    def test_num_filter_increment_return(self):
+        self.providers.filter_active()
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterSkillsTest(TestCase):
+    
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_skill_filter_primary(self):
+        self.providers.filter_by_skills(["test primary skill"], primary=True)
+
+        assert len(self.providers.df) == 1
+        assert "test_first_name" in self.providers.df["first_name"].values
+
+    def test_skill_filter_secondary(self):
+        self.providers.filter_by_skills(["test secondary skill"], primary=False)
+
+        assert len(self.providers.df) == 2
+        assert "test_first_name" in self.providers.df["first_name"].values
+        assert "Hettie" in self.providers.df["first_name"].values
+        
+
+    def test_skill_filter_increment_return(self):
+        self.providers.filter_by_skills(["test primary skill"], primary=True)
+        test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)

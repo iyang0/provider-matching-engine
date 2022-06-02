@@ -173,6 +173,9 @@ class ProviderList:
         'at' for equal, 'after' for greater than, or 'before' for less than.
         """
 
+        if type(date) is not str:
+            raise TypeError("date param should be a string")
+
         if operator == "at":
             self.df = self.df.loc[self.df["birth_date"] == date]
             self._increment_returned_counter()
