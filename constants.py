@@ -1,4 +1,5 @@
 PROVIDER_JSON = "providers.json"
+TEST_JSON = "./test_resource/test_providers.json"
 FILTER_OPTIONS = "filter_options"
 DEFAULT_COLUMNS = ["returned", "rating"]
 DEFAULT_ORDER = [True, False]
@@ -9,7 +10,7 @@ TRAITS = [ "id",
             "birth_date",
             "rating",
             "primary_skills",
-            "secondary_skills",
+            "secondary_skill",
             "company",
             "active",
             "country",

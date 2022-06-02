@@ -5,6 +5,9 @@ from helpers import intersection, unique_union
 from providers_types import Filter_Options, Provider
 from constants import STR_TRAITS
 
+# I am not chaining assignment and am just rewriting in the internal increment method
+pd.options.mode.chained_assignment = None
+
 class ProviderList:
     def __init__(self, providers_json):
         """

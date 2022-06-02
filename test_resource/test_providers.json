@@ -1,0 +1,64 @@
+[
+  {
+    "id": 1,
+    "first_name": "test_first_name",
+    "last_name": "test_first_name",
+    "sex": "Male",
+    "birth_date": "1934-12-07",
+    "rating": 3.6,
+    "primary_skills": [
+      "testLOWERCASE",
+      "test primary skill",
+      "Secure Coding Practices",
+      "Application Integration"
+    ],
+    "secondary_skill": [
+      "test secondary skill",
+      "Web Development"
+    ],
+    "company": "Test_Company",
+    "active": true,
+    "country": "Test_country",
+    "language": "Test_language"
+  },
+  {
+    "id": 2,
+    "first_name": "Alethea",
+    "last_name": "Labusch",
+    "sex": "Female",
+    "birth_date": "1951-03-16",
+    "rating": 7.9,
+    "primary_skills": [
+      "Computational Logic"
+    ],
+    "secondary_skill": [
+      "Linux / Unix",
+      "System Administration",
+      "Software Development Lifecycle",
+      "Container Technologies"
+    ],
+    "company": "Stanton-Williamson",
+    "active": false,
+    "country": "China",
+    "language": "Haitian Creole"
+  },
+  {
+    "id": 3,
+    "first_name": "Hettie",
+    "last_name": "Solleme",
+    "sex": "Female",
+    "birth_date": "1986-06-13",
+    "rating": 8.2,
+    "primary_skills": [
+      "HTML",
+      "Embedded Systems"
+    ],
+    "secondary_skill": [
+      "Continuous Integration"
+    ],
+    "company": "Treutel and Sons",
+    "active": false,
+    "country": "China",
+    "language": "Kyrgyz"
+  }
+]
