@@ -134,7 +134,7 @@ class ProviderList:
         """
 
         if counter_reset:
-            self.returned = 0
+            self.returned[:] = 0
         
         self.df = pd.DataFrame(self.providers)
         self.df["returned"] = self.returned

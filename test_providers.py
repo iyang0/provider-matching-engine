@@ -1,12 +1,13 @@
 from providers import ProviderList
-from constants import TEST_JSON, TRAITS
+from constants import TEST_JSON, TRAITS, DEFAULT_COLUMNS, DEFAULT_ORDER
 from unittest import TestCase
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 import pandas as pd
 
 class GetProvidersStaticTest(TestCase):
 
-    providers, df = ProviderList.get_providers(TEST_JSON)
+    def setUp(self):
+        self.providers, self.df = ProviderList.get_providers(TEST_JSON)
 
     def test_columns_in_dataframe(self):
         columns = {*TRAITS, "returned"}
@@ -24,8 +25,9 @@ class GetProvidersStaticTest(TestCase):
 
 class GetskillsStaticTest(TestCase):
 
-    providers, df = ProviderList.get_providers(TEST_JSON)
-    primary_skills, secondary_skills = ProviderList.get_skills_dict(df)
+    def setUp(self):
+        self.providers, self.df = ProviderList.get_providers(TEST_JSON)
+        self.primary_skills, self.secondary_skills = ProviderList.get_skills_dict(self.df)
 
     def test_skills_in_dict_are_lowered(self):
         assert "testlowercase" in self.primary_skills
@@ -55,24 +57,25 @@ class InitTest(TestCase):
 
 class InternalIncrementerTest(TestCase):
     
-    providers = ProviderList(TEST_JSON)
-    called = 0
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+        self.called = 0
 
     def increment(self):
         self.providers._increment_returned_counter()
-        InternalIncrementerTest.called += 1
+        self.called += 1
 
     def test_increment_returned(self):
         self.increment()
-        assert all(self.providers.returned == InternalIncrementerTest.called)
+        assert all(self.providers.returned == self.called)
 
     def test_dataframe_returned(self):
         self.increment()
-        assert all(self.providers.df["returned"] == InternalIncrementerTest.called)
+        assert all(self.providers.df["returned"] == self.called)
 
     def test_subset_increment_works(self):
         self.providers.df = self.providers.df.loc[self.providers.df['active']]
-        test_list = [InternalIncrementerTest.called for n in range(3)]
+        test_list = [self.called for n in range(3)]
 
         self.increment()
 
@@ -80,4 +83,81 @@ class InternalIncrementerTest(TestCase):
         test_series = pd.Series(test_list)
 
         assert all(self.providers.returned == test_series)
+
+class ListMethodTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_list_same_as_source_without_change(self):
+        assert self.providers.providers == self.providers.list()
+
+    def test_list_has_returned_column_if_True(self):
+        assert "returned" in self.providers.list(with_returned=True)[0]
+
+    def test_only_lists_current_dataframe(self):
+        self.providers.df = self.providers.df.loc[self.providers.df['active']]
+        assert len(self.providers.list()) == 1
+
+class sortRatingTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_descending_sort(self):
+        self.providers.sort_rating(ascending=False)
+        head = self.providers.df["rating"].head(1).values[0]
+        tail = self.providers.df["rating"].tail(1).values[0]
+        assert head > tail
+    
+    def test_ascending_sort(self):
+        self.providers.sort_rating(ascending=True)
+        head = self.providers.df["rating"].head(1).values[0]
+        tail = self.providers.df["rating"].tail(1).values[0]
+        assert head < tail
+    
+class SortColTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+
+    def test_with_default(self):
+        self.providers.sort(DEFAULT_COLUMNS, DEFAULT_ORDER)
+        test_id_list = [3,2,1]
+
+        assert test_id_list == list(self.providers.df["id"])
+    #todo: test with other columns
+
+class Reset_test(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+    
+    def tearDown(self):
+        self.providers.returned = 0
+
+    def test_resets_df(self):
+        self.providers.df = self.providers.df.loc[self.providers.df['active']]
+        assert len(self.providers.df) == 1
+        self.providers.reset()
+        assert len(self.providers.df) == 3
+    
+    def test_reset_does_not_update_returned(self):
+        self.providers._increment_returned_counter()
+        assert all(self.providers.returned == 1)
+        self.providers.reset()
+        assert all(self.providers.returned == 1)
+
+    def test_reset_does_not_update_returned_df_column(self):
+        self.providers._increment_returned_counter()
+        assert all(self.providers.df["returned"] == 1)
+        self.providers.reset()
+        assert all(self.providers.df["returned"] == 1)
+
+    def test_deep_reset(self):
+        self.providers._increment_returned_counter()
+        assert all(self.providers.returned == 1)
+        self.providers.reset(counter_reset=True)
+        assert all(self.providers.returned == 0)
+        assert all(self.providers.df["returned"] == 0)
 
