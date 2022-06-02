@@ -36,13 +36,16 @@ I have set up a simple server rendering a table display of the providers in `pro
 
 ## Provider_list
 
-The `Provider_list` class is the backbone of the project which uses the pandas library to filter down the rows of data. It has a `providers` attribute which is the source list, and a `df` attribute which is a pandas dataframe used as a running filtered dataset. This class can be used independent of the server if need be for other programs with a json of providers.
+The `Provider_list` class is the backbone of the project which uses the pandas library to filter down the rows of data. It has a `providers` attribute which is the source list, and a `df` attribute which is a pandas dataframe used as a running filtered dataset. This class can be used independent of the server if need be for other programs with a json of providers. There is also a `returned` attribute for each time a row of data came back from a filter.
+`primary_skills` and `secondary_skills` are dictionaries for which indexes in the dataframe contain what skills, only really used internally.
 
 ### Methods
 
 - `list() -> List[Provider]` - Returns a list representation of the current filtered dataframe, useful for services over the web as dataframes can't be sent over easily.
 
-- `sort_rating(ascending = False):` - Sort the current dataframe by rating, by default descending order.
+- `sort_rating(ascending = False)` - Sort the current dataframe by rating, by default descending order.
+
+- `sort(columns: List[str], ascending: List[bool])` - Sort by any number of columns, which columns are determined by the list in (columns). Those columns can be ascending if the same index in the list (ascending) is true, otherwise the column is in descending order if it is false
 
 - `reset_df()` - Resets the filtered dataframe to the data shape from the source list
 
