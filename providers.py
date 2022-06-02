@@ -95,10 +95,14 @@ class ProviderList:
         Can choose to return the "returned" column in the dataframe.
         """
 
-        if with_returned:
-            df_copy = self.df.copy()
-        else:
-            df_copy = self.df[self.df.columns.difference(["returned"])].copy()
+        #this method of copying without returned col not working as it messes with column order
+
+        # if with_returned:
+        #     df_copy = self.df.copy()
+        # else:
+        #     df_copy = self.df[self.df.columns.difference(["returned"])].copy()
+
+        df_copy = self.df.copy()
 
         # Convert datetime column into a string column
         df_copy["birth_date"] = df_copy["birth_date"].astype(str)

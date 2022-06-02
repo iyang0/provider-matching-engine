@@ -25,6 +25,8 @@ def root():
     providers.reset()
     providers_list = providers.sort(DEFAULT_COLUMNS, DEFAULT_ORDER).list()
 
+    print(providers.list())
+
     return render_template("provider_list.html",
                             title = "List of Providers",
                             providers = providers_list)
