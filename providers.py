@@ -238,7 +238,7 @@ class ProviderList:
         for skill in skills:
 
             skill = skill.lower()
-            skills_intersection : list
+            skills_intersection = []
 
             if primary:
                 if skill in self.primary_skills:
@@ -262,8 +262,15 @@ class ProviderList:
             # prevent duplicates by getting uniques instead of just adding to list
             providers_index = unique_union(providers_index, skills_intersection)
 
+        # mapping through indexes to prevent out of bounds access error
+        mapped_indexes=[]
+        for idx, val in enumerate(list(self.df.index)):
+            for provider_with_skill_idx in providers_index:
+                if val == provider_with_skill_idx:
+                    mapped_indexes.append(idx)
+        
         # gets rows of providers based on list of indexes by which indexes have skills
-        self.df = self.df.iloc[providers_index]
+        self.df = self.df.iloc[mapped_indexes]
         self._increment_returned_counter()
         return self
 

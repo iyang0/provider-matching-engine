@@ -3,6 +3,7 @@ from constants import TEST_JSON, TRAITS, DEFAULT_COLUMNS, DEFAULT_ORDER
 from unittest import TestCase
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 import pandas as pd
+from unittest.mock import MagicMock
 
 class GetProvidersStaticTest(TestCase):
 
@@ -127,12 +128,19 @@ class SortColTest(TestCase):
     def setUp(self):
         self.providers = ProviderList(TEST_JSON)
 
-    def test_with_default(self):
+    def test_sorting_one_column(self):
+        self.providers.sort(["first_name"], [False])
+        test_id_list = [1,3,2]
+
+        assert test_id_list == list(self.providers.df["id"])
+
+    def test_sort_two_columns(self):
         self.providers.sort(DEFAULT_COLUMNS, DEFAULT_ORDER)
         test_id_list = [3,2,1]
 
         assert test_id_list == list(self.providers.df["id"])
-    #todo: test with other columns
+
+
 
 class ResetTest(TestCase):
 
@@ -327,5 +335,47 @@ class FilterSkillsTest(TestCase):
     def test_skill_filter_increment_return(self):
         self.providers.filter_by_skills(["test primary skill"], primary=True)
         test_series = pd.Series([1, 0, 0])
+
+        assert all(self.providers.returned == test_series)
+
+class FilterCombinationTest(TestCase):
+
+    def setUp(self):
+        self.providers = ProviderList(TEST_JSON)
+        self.options = {
+            "sex": "Female",
+            "secondary_skills": ["test secondary skill"]
+        }
+
+    def test_multi_filter(self):
+        self.providers.filter(self.options)
+
+        assert "Hettie" in self.providers.df["first_name"].values
+
+    def test_multi_filter_calls_other_methods(self):
+        self.providers.filter_by_sex = MagicMock(return_value = self)
+        self.providers.filter_by_skills = MagicMock(return_value = self)
+        self.providers.filter_active = MagicMock(return_value = self)
+        self.providers.filter(self.options)
+
+        self.providers.filter_by_sex.assert_called()
+        self.providers.filter_by_skills.assert_called()
+        self.providers.filter_active.assert_not_called()
+
+    def test_multi_filter_nonexistant_trait(self):
+        nonexistant_trait = { "test": "value"}
+        self.providers.filter(nonexistant_trait)
+        test_series = pd.Series([0]*3)
+
+        assert all(self.providers.returned == test_series)
+
+    def test_multi_filter_increment_return(self):
+        options = {
+            "id": ("eq", 1),
+            "first_name": "test_first_name",
+            "primary_skills": ["test primary skill"]
+        }
+        self.providers.filter(options)
+        test_series = pd.Series([3, 0, 0])
 
         assert all(self.providers.returned == test_series)
